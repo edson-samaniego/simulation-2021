@@ -32,7 +32,7 @@ for z in range (0, 144):
     print(pos,'centro',z) #imprimo para ver en que posicion va
     print(matriz2[v1], 'vecino')   #visualizo el vecino que le indico 
     if pos == 1:
-        if matriz2[v1] == 0:#### regla 1 si el vecino superior es 0 
+        if matriz2[v1] == 0:##### regla 1 si el vecino superior es 0 
             
             matriz2[z]=0 #### el centro cambiara a muerto osea de 1 a 0
             
