@@ -29,7 +29,7 @@ for pv in (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9):
         agentes['dy'] = [uniform(-v, v) for i in range(n)]        
         agentes['estado'] = ['V' if random() < pv else 'S' if random() > pi else 'I' for i in range(n)]
         epidemia = []
-####################### iteraciones o imagenes que son 50
+####################### iteraciones 
         for tiempo in range(tmax):
             conteos = agentes.estado.value_counts()
             infectados = conteos.get('I', 0)
@@ -51,7 +51,7 @@ for pv in (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9):
 
             for i in range(n): # ciclo de movimientos
                 a = agentes.iloc[i] # revisa de nuevo los agentes
-                if contagios[i]:  # si esta en los contagios 
+                if contagios[i]:  # si está en los contagios 
                     agentes.at[i, 'estado'] = 'I' # actualiza el estado de S a I
                 elif a.estado == 'I': #si ya estab infectado desde antes
                     if random() < pr: # entonces hace un random de si es menor a pr
@@ -152,7 +152,7 @@ D7=(d7[0]+d7[1]+d7[2]+d7[3]+d7[4]+d7[5]+d7[6]+d7[7]+d7[8]+d7[9])
 D8=(d8[0]+d8[1]+d8[2]+d8[3]+d8[4]+d8[5]+d8[6]+d8[7]+d8[8]+d8[9])
 D9=(d9[0]+d9[1]+d9[2]+d9[3]+d9[4]+d9[5]+d9[6]+d9[7]+d9[8]+d9[9])
 
-################ Gráfica de punto maximo ó pico
+################ Gráfica de punto máximo ó pico
 plt.boxplot([D0, D1, D2, D3, D4, D5, D6, D7, D8, D9])
 plt.scatter(1,(max(D0)), color="orange")
 plt.scatter(2,(max(D1)), color="orange")
