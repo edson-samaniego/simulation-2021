@@ -1,0 +1,149 @@
+\documentclass[a4paper, 11pt]{article}
+\usepackage{comment} 
+\usepackage{fullpage} 
+\usepackage[spanish]{babel} 
+\selectlanguage{spanish}
+\usepackage[utf8]{inputenc}
+\usepackage{float} 
+\usepackage{graphicx}
+\usepackage{ marvosym }
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage[sort&compress, numbers]{natbib}
+\usepackage{amssymb}
+\usepackage{hyperref}
+%\hypersetup{colorlinks=True, citecolor=blue}
+\hypersetup{colorlinks=true, citecolor=green, urlcolor=blue}
+
+\begin{document}
+\begin{center}
+\LARGE \bf Pr\'actica 6\\ Sistema Multiagente 
+\end{center}
+
+\vspace{1cm} 
+\noindent\textbf {Edson Edgardo Samaniego Pantoja} \hfill \textbf{Materia:} Simulación computacional 
+\hfill \\
+\textbf{Fecha} \today  
+\vspace{1cm} 
+
+\section{Introducción}
+Un sistema multiagente maneja entidades con estados internos que pueden observar estados de otros y reaccionar cambiando su propio estado según condiciones dadas y con la particularidad que los agentes pueden moverse y variar su vecindad entre otras cosas.
+
+\section{Metodología}
+La práctica consiste en la implementación de sistema multiagente aplicado en epidemiología. Los agentes en este sistema tienen tres estados posibles, susceptibles, infectados o recuperados.
+En este existen otros parámetros como lo son, el número de agentes \texttt{n} y la probabilidad de infección al inicio. La infección produce inmunidad en los recuperados, por lo cual solamente los susceptibles podrán ser infectados. La probabilidad de contagio será proporcional a la distancia euclidiana entre dos agentes \texttt{$d(i,j) $} de la siguiente manera:
+
+\bigskip
+$ p_c = 
+\Bigg\{
+\begin{array}{lc}
+
+  0,  &        \text{si}\hspace{.15cm} d(i,j)\geq r,\\
+  \frac{r-d}{r}, &  \text{en otro caso,}
+\end{array}$
+
+\bigskip
+donde $r$ es un umbral. Los agentes tienen coordenadas \texttt{$x$} y \texttt{$y$}, así como una dirección y una velocidad que son expresadas por \texttt{$\Delta x$} y \texttt{$\Delta y$}, dichos agentes están situados uniformemente al azar en un torus de un rectángulo de \texttt{$l\times l$}. 
+El código de esta simulación de pandemia es dado en la web \cite{elisa} o consultado en el repositorio de Schaeffer \cite{dra} en el que se puede ver la propagación de la pandemia y su recuperación a lo largo del tiempo representado en imágenes secuenciales.
+
+
+\section{Objetivo}
+Realizar un código que simule una vacuna con probabilidad representada con $p_v$ porcentaje de vacunación y se debe estudiar el efecto estadístico del valor de $p_v$ (de cero a uno en pasos de 0.1) en el porcentaje máximo de infectados durante la simulación y el momento (iteración) en el cual se alcanza ese máximo.
+
+
+\section{Simulación}
+El programa realizado puede ser consultado en el repositorio de Samaniego \cite{Edson} para visualizar lo que se hizo a detalle.
+Lo principal que se realiza en el código es establecer el porcentaje de vacunados y las replicas que habrá para cada uno en ciclos \texttt{for}. Cada porcentaje se realizará 25 veces para obtener un muestreo en las gráficas finales.
+Dentro de esta parte del código donde se asignan los agentes, se agrega un \texttt{estado} más que sera el de vacunados (\texttt{V}), aplicará este estado cada que el número al azar sea menor a el porcentaje de vacunados del ciclo correspondiente que varía de 0 a 0.9.
+\begin{verbatim}
+c = {'I': 'r', 'S': 'g', 'R': 'orange', 'V':'blue'}
+m = {'I': 'o', 'S': 's', 'R': '2', 'V':'P'}
+replicas = 25
+for pv in (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9):
+    for rep in range(replicas):
+        agentes =  pd.DataFrame()
+        agentes['x'] = [uniform(0, l) for i in range(n)]
+        agentes['y'] = [uniform(0, l) for i in range(n)]
+        agentes['dx'] = [uniform(-v, v) for i in range(n)]
+        agentes['dy'] = [uniform(-v, v) for i in range(n)]        
+        agentes['estado'] = ['V' if random() < pv else 'S' if random() > pi else 'I' for i in range(n)]
+        epidemia = []
+\end{verbatim}
+De esta manera agregando este estado como un agente más, provocara que según la condición para infectar sea menor ya que la infección solo puede propagarse por los susceptibles que estén mas cercanos como se ve en el siguiente código.
+\begin{verbatim}
+        if a2.estado == 'S':  
+            d = sqrt((a1.x - a2.x)**2 + (a1.y - a2.y)**2) 
+            if d < r:   
+                if random() < (r - d) / r:
+                    contagios[j] = True 
+    
+\end{verbatim}
+Los cambios complementarios que se le hacen al código son la forma de obtención de los gráficos, debido a que son extensos se pueden consultar en el repositorio de Samaniego \cite{Edson} para ver como realiza la obtención de resultados estadísticos.
+
+
+\section{Resultados}
+Esta parte de los resultados se pueden apreciar el conjunto de datos obtenidos en el cuadro \ref{tab1} que muestra cada probabilidad de vacunados, réplicas, máximo número de contagiados y el tiempo en que llego al pico de contagios dado en iteraciones. En dicha tabla se puede ver como a medida que aumenta la probabilidad de vacunados, el máximo de contagiados se va reduciendo debido a que mas gente es la que ya no es susceptible al virus de la epidemia.
+    \begin{table}[H]
+        \caption{Registro de máximos contagios por probabilidad de vacunación.}
+        \bigskip
+        \label{tab1}
+        \centering
+        \begin{tabular}{|r|r|r|r|}
+        \hline
+         Probabilidad&Réplicas&Máximo&Momento de pico (media)  \\
+        \hline
+        0 & 25 & 39 & 46 \\
+        \hline
+        0.1 & 25 & 32 & 50  \\
+        \hline
+        0.2 & 25 & 33 & 62 \\
+        \hline
+        0.3 & 25 & 32 & 75 \\
+        \hline
+        0.4 & 25  & 22 & 57  \\
+        \hline
+        0.5 & 25 & 16 & 58 \\
+        \hline
+        0.6 & 25 & 18 & 48 \\
+        \hline
+        0.7 & 25 & 12 & 22  \\
+        \hline
+        0.8 & 25 & 6 & 15 \\
+        \hline
+        0.9 & 25 & 2 & 19 \\
+        \hline
+        \end{tabular}
+    \end{table}
+\bigskip
+
+Para una mejor representación de los datos tabulados, se realizan gráficos caja-bigote para representar los cambios respecto a la probabilidad y en cada caja de conjunto de datos aplican las 25 replicas y de ahí se saca el máximo de cada una, así viendo los picos y como tiende a desaparecer conforme hay mas vacunas. Se puede ver en la figura \ref{f1}
+\begin{figure}[H]
+  \centering      
+  \includegraphics[scale=.7]{Gráfica3_1.png}
+  \caption{Gráfica caja-bigote de máximo y media de contagios.}
+  \label{f1}
+\end{figure}
+\bigskip
+
+La próxima figura \ref{f2} en lugar de estar viendo los máximos de contagios, ahora se observa el máximo y media de el momento que se dio el pico de dicho máximo de contagios para de esta manera ver si con respecto a su probabilidad de vacunas éste tiempo se disminuía o presentaba algún cambio.
+Se aprecia un cambio en disminución en la media de cada caja-bigote debido que aunque sigue habiendo picos que no se ven uniformes, la mayor concentración de datos si se ve en ligera disminución. 
+
+\begin{figure}[H]
+  \centering      
+  \includegraphics[scale=.7]{Gráfica2_2.png}
+  \caption{Gráfica caja-bigote de máximo y media de momento pico de contagios.}
+  \label{f2}
+\end{figure}
+
+
+\section{Conclusión}
+Se puede concluir que en base a la figura \ref{f1} donde vemos la cantidad de contagios, se puede decir que gracias a la probabilidad de vacuna entre más grande sea entonces el número de contagios va disminuyendo hasta que llega su punto mínimo donde toda la población esta vacunada y ya no se propaga.
+Sin embargo si se analiza la figura \ref{f2} donde muestra el comportamiento del momento en que ocurrió el pico de contagios se puede ver que solamente si se toma en cuenta la media se ve una disminución respecto a la probabilidad pero el máximo sigue dando ciertos puntos altos. 
+\bigskip
+\bibliography{refe}
+\bibliographystyle{plainnat}
+
+
+
+
+\end{document}
